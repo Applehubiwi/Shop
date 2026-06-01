@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dora Shop Demo</title>
+<style>
+body{font-family:Arial,sans-serif;background:#111;color:#fff;margin:0}
+header{background:#1b1b1b;padding:15px;text-align:center}
+.card{background:#222;margin:15px;padding:15px;border-radius:12px}
+input,button,select{padding:10px;margin:5px;border-radius:8px;border:none}
+button{cursor:pointer}
+.hidden{display:none}
+.product{border:1px solid #444;padding:10px;margin:10px;border-radius:8px}
+</style>
+</head>
+<body>
+<header><h1>Dora Shop (Demo)</h1></header>
+
+<div class="card" id="auth">
+<h3>Đăng ký</h3>
+<input id="ru" placeholder="Tên tài khoản"><br>
+<input id="rp" type="password" placeholder="Mật khẩu"><br>
+<button onclick="register()">Đăng ký</button>
+
+<h3>Đăng nhập</h3>
+<input id="lu" placeholder="Tên tài khoản"><br>
+<input id="lp" type="password" placeholder="Mật khẩu"><br>
+<button onclick="login()">Đăng nhập</button>
+</div>
+
+<div id="shop" class="hidden">
+<div class="card">
+Xin chào <span id="user"></span><br>
+Số dư: <span id="balance">0</span> VNĐ
+</div>
+
+<div class="card">
+<button onclick="daily()">+100K/ngày</button>
+<button onclick="gift()">Nhập Giftcode</button>
+</div>
+
+<div class="card">
+<h3>Nạp thẻ (DEMO)</h3>
+<input id="seri" placeholder="Seri">
+<input id="code" placeholder="Mã thẻ">
+<button onclick="topup()">Nạp</button>
+</div>
+
+<div class="card">
+<h3>Tài khoản Roblox mẫu</h3>
+<div class="product">VIP - 50.000đ <button onclick="buy(50000,'VIP')">Mua</button></div>
+<div class="product">Premium - 100.000đ <button onclick="buy(100000,'Premium')">Mua</button></div>
+<div class="product">Checked - 200.000đ <button onclick="buy(200000,'Checked')">Mua</button></div>
+</div>
+
+<div class="card">
+<h3>Lịch sử</h3>
+<ul id="history"></ul>
+</div>
+</div>
+
+<script>
+function addHistory(t){
+ let h=JSON.parse(localStorage.getItem("history")||"[]");
+ h.unshift(t);
+ localStorage.setItem("history",JSON.stringify(h));
+ renderHistory();
+}
+function renderHistory(){
+ let h=JSON.parse(localStorage.getItem("history")||"[]");
+ document.getElementById("history").innerHTML=h.map(x=>"<li>"+x+"</li>").join("");
+}
+function register(){
+ localStorage.setItem("user",ru.value);
+ localStorage.setItem("pass",rp.value);
+ alert("Đăng ký thành công");
+}
+function login(){
+ if(lu.value===localStorage.getItem("user")&&lp.value===localStorage.getItem("pass")){
+  auth.classList.add("hidden");
+  shop.classList.remove("hidden");
+  user.textContent=lu.value;
+  balance.textContent=(localStorage.getItem("balance")||0);
+  renderHistory();
+ } else alert("Sai thông tin");
+}
+function daily(){
+ let t=new Date().toDateString();
+ if(localStorage.getItem("daily")==t){alert("Đã nhận hôm nay");return;}
+ let b=Number(localStorage.getItem("balance")||0)+100000;
+ localStorage.setItem("balance",b);
+ localStorage.setItem("daily",t);
+ balance.textContent=b;
+ addHistory("+100K thưởng ngày");
+}
+function topup(){
+ let b=Number(localStorage.getItem("balance")||0)+50000;
+ localStorage.setItem("balance",b);
+ balance.textContent=b;
+ addHistory("Nạp thẻ demo +50K");
+ alert("Nạp thành công (demo)");
+}
+function gift(){
+ let c=prompt("Nhập giftcode");
+ if(c==="DORA100"){
+  let b=Number(localStorage.getItem("balance")||0)+100000;
+  localStorage.setItem("balance",b);
+  balance.textContent=b;
+  addHistory("Giftcode DORA100 +100K");
+ } else alert("Sai giftcode");
+}
+function buy(price,name){
+ let b=Number(localStorage.getItem("balance")||0);
+ if(b<price){alert("Không đủ tiền");return;}
+ b-=price;
+ localStorage.setItem("balance",b);
+ balance.textContent=b;
+ addHistory("Mua tài khoản "+name);
+ alert("Mua thành công (demo)");
+}
+</script>
+</body>
+</html>
